@@ -1,6 +1,8 @@
 using Serilog;
 using HotelListingM.Data;
 using Microsoft.EntityFrameworkCore;
+using HotelListingM.Configurations;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -24,6 +26,7 @@ builder.Services.AddCors(options => {
 
 // add serilog to our host,lc->logger configuration
 builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));
+builder.Services.AddAutoMapper(typeof(MapperConfig));
 
 var app = builder.Build();
 
