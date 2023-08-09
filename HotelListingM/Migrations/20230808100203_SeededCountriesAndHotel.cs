@@ -2,16 +2,18 @@
 
 #nullable disable
 
-namespace HotelListing.API.Migrations
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
+namespace HotelListingM.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class SeededCountriesAndHotel : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "countries",
+                name: "Countries",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -21,7 +23,7 @@ namespace HotelListing.API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_countries", x => x.Id);
+                    table.PrimaryKey("PK_Countries", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -39,11 +41,31 @@ namespace HotelListing.API.Migrations
                 {
                     table.PrimaryKey("PK_Hotels", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Hotels_countries_CountryId",
+                        name: "FK_Hotels_Countries_CountryId",
                         column: x => x.CountryId,
-                        principalTable: "countries",
+                        principalTable: "Countries",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Countries",
+                columns: new[] { "Id", "Name", "ShortName" },
+                values: new object[,]
+                {
+                    { 1, "Jamaica", "JM" },
+                    { 2, "Bahamas", "BS" },
+                    { 3, "Cayman Island", "CI" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Hotels",
+                columns: new[] { "Id", "Address", "CountryId", "Name", "Rating" },
+                values: new object[,]
+                {
+                    { 1, "Negril", 1, "Sandals Resort and Spa", 4.5 },
+                    { 2, "George Town", 3, "Comfort Suites", 4.2999999999999998 },
+                    { 3, "Nassua", 2, "Grand Palldium", 4.0 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -59,7 +81,7 @@ namespace HotelListing.API.Migrations
                 name: "Hotels");
 
             migrationBuilder.DropTable(
-                name: "countries");
+                name: "Countries");
         }
     }
 }
