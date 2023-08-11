@@ -4,18 +4,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HotelListingM.Data;
 using HotelListingM.Models.Country;
 using AutoMapper;
 using HotelListingM.Contracts;
-using HotelListingM.Repository;
 
 namespace HotelListing.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    
     public class CountriesController : ControllerBase
     {
         private readonly ICountriesRepository _countriesRepository;
@@ -55,6 +56,7 @@ namespace HotelListing.API.Controllers
         // To protect from overposting attacks, https://go.microsoft.com/fwlink/?linkid=2123754
         
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutCountry(int id, UpdateCountryDto updateCountryDto)
         {
             if (id != updateCountryDto.Id)
@@ -93,6 +95,7 @@ namespace HotelListing.API.Controllers
         // Data transfer object => Its an abstraction of the data that we do want to transfer
         //when the data comes in use createcountry model
         [HttpPost]
+        [Authorize]
         //public async Task<ActionResult<Country>> PostCountry(Country country)
         public async Task<ActionResult<Country>> PostCountry(CreateCountryDto createCountryDto)
         {
@@ -103,13 +106,14 @@ namespace HotelListing.API.Controllers
             //};
             var country = _mapper.Map<Country>(createCountryDto);
 
-            _countriesRepository.AddAsync(country);
+            await _countriesRepository.AddAsync(country);
 
             return CreatedAtAction("GetCountry", new { id = country.Id }, country);
         }
 
         // DELETE: api/Countries/5
         [HttpDelete("{id}")]
+        [Authorize(Roles ="Administrator")]
         public async Task<IActionResult> DeleteCountry(int id)
         {
             var country = await _countriesRepository.GetAsync(id);
@@ -117,7 +121,7 @@ namespace HotelListing.API.Controllers
             {
                 return NotFound();
             }
-            _countriesRepository.DeleteAsync(id);
+            await _countriesRepository.DeleteAsync(id);
 
             return NoContent();
         }
